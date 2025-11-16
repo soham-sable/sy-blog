@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html >
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asymmetric Key Cryptography | Internet Technology</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+        
+        nav {
+            background-color: var(--dark);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 1rem 0;
+        }
+        
+        nav li {
+            margin: 0 1.5rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: var(--secondary);
+        }
+        
+        section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        h1, h2, h3 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 0.5rem;
+        }
+        
+        h3 {
+            font-size: 1.4rem;
+            color: var(--secondary);
+        }
+        
+        p {
+            margin-bottom: 1rem;
+        }
+        
+        .intro {
+            font-size: 1.1rem;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+        
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .algorithm-demo {
+            background-color: var(--light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+        
+        .demo-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        input, select, button, textarea {
+            padding: 0.7rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        button {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: var(--primary);
+        }
+        
+        .result {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            border-left: 4px solid var(--secondary);
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+        }
+        
+        .key-display {
+            background-color: #2c3e50;
+            color: #27ae60;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 0.5rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+        
+        .comparison-table th, .comparison-table td {
+            padding: 0.8rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .comparison-table th {
+            background-color: var(--light);
+            color: var(--primary);
+        }
+        
+        .comparison-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .visualization {
+            background-color: var(--light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        
+        .visual-box {
+            display: inline-block;
+            width: 100px;
+            height: 60px;
+            line-height: 60px;
+            background-color: var(--secondary);
+            color: white;
+            margin: 0 10px;
+            border-radius: 4px;
+            position: relative;
+        }
+        
+        .visual-arrow {
+            display: inline-block;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .operations {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+        
+        .status {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .status.valid {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.invalid {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .info-panel {
+            background-color: #e3f2fd;
+            border: 2px solid var(--secondary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .math-formula {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--secondary);
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            nav li {
+                margin: 0.5rem 0;
+            }
+            
+            .card-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .demo-controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Asymmetric Key Cryptography</h1>
+            <p class="intro">A comprehensive study of RSA cryptography and its applications in internet technology</p>
+        </div>
+    </header>
+    
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="#introduction">Introduction</a></li>
+                <li><a href="#algorithms">RSA Algorithm</a></li>
+                <li><a href="#demo">Interactive Demo</a></li>
+                <li><a href="#applications">Applications</a></li>
+                <li><a href="#comparison">Comparison</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <section id="introduction">
+            <h2>Introduction to Asymmetric Key Cryptography</h2>
+            <p>Asymmetric key cryptography, also known as public-key cryptography, uses two different but mathematically related keys - a public key for encryption and a private key for decryption. This eliminates the key distribution problem faced in symmetric cryptography.</p>
+            
+            <div class="visualization">
+                <div class="visual-box">Plaintext</div>
+                <div class="visual-arrow">→</div>
+                <div class="visual-box" style="background-color: var(--accent);">Encrypt<br>(Public Key)</div>
+                <div class="visual-arrow">→</div>
+                <div class="visual-box">Ciphertext</div>
+                <div class="visual-arrow">→</div>
+                <div class="visual-box" style="background-color: var(--success);">Decrypt<br>(Private Key)</div>
+                <div class="visual-arrow">→</div>
+                <div class="visual-box">Plaintext</div>
+                <p style="margin-top: 1rem;">Different keys used for encryption and decryption</p>
+            </div>
+            
+            <p>The security of asymmetric cryptography relies on mathematical problems that are easy to compute in one direction but difficult to reverse, such as factoring large numbers or computing discrete logarithms.</p>
+            
+            <h3>Key Characteristics</h3>
+            <ul>
+                <li><strong>Key Pairs:</strong> Uses mathematically related public and private keys</li>
+                <li><strong>Key Distribution:</strong> Public keys can be freely shared</li>
+                <li><strong>Digital Signatures:</strong> Provides authentication and non-repudiation</li>
+                <li><strong>Speed:</strong> Slower than symmetric cryptography</li>
+                <li><strong>Usage:</strong> Ideal for key exchange, digital signatures, and authentication</li>
+            </ul>
+        </section>
+        
+        <section id="algorithms">
+            <h2>RSA Algorithm</h2>
+            <p>The RSA algorithm, named after its creators Rivest, Shamir, and Adleman, is the most widely used asymmetric cryptography system. It's based on the practical difficulty of factoring the product of two large prime numbers.</p>
+            
+            <div class="info-panel">
+                <h3>RSA Key Generation Process</h3>
+                <div class="math-formula">
+                    <strong>Key Generation Steps:</strong><br>
+                    1. Choose two large primes: p and q<br>
+                    2. Compute n = p × q<br>
+                    3. Compute φ(n) = (p-1) × (q-1)<br>
+                    4. Choose e such that 1 < e < φ(n) and gcd(e, φ(n)) = 1<br>
+                    5. Compute d = e⁻¹ mod φ(n)<br>
+                    <br>
+                    <strong>Public Key:</strong> (e, n)<br>
+                    <strong>Private Key:</strong> (d, n)
+                </div>
+            </div>
+            
+            <div class="card-container">
+                <div class="card">
+                    <h3>Encryption Process</h3>
+                    <div class="math-formula">
+                        c = mᵉ mod n<br>
+                        Where:<br>
+                        c = ciphertext<br>
+                        m = plaintext message<br>
+                        e = public exponent<br>
+                        n = modulus
+                    </div>
+                    <p>Anyone can encrypt using the public key, but only the private key holder can decrypt.</p>
+                </div>
+                
+                <div class="card">
+                    <h3>Decryption Process</h3>
+                    <div class="math-formula">
+                        m = cᵈ mod n<br>
+                        Where:<br>
+                        m = original message<br>
+                        c = ciphertext<br>
+                        d = private exponent<br>
+                        n = modulus
+                    </div>
+                    <p>Decryption uses the private key to recover the original message from ciphertext.</p>
+                </div>
+                
+                <div class="card">
+                    <h3>Digital Signatures</h3>
+                    <div class="math-formula">
+                        Signature: s = H(m)ᵈ mod n<br>
+                        Verify: H(m) = sᵉ mod n
+                    </div>
+                    <p>RSA can create digital signatures that provide authentication, integrity, and non-repudiation.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="demo">
+            <h2>Interactive RSA Demo</h2>
+            <p>Experience RSA cryptography in action. Generate keys, encrypt messages, and verify digital signatures using the interactive demo below.</p>
+            
+            <div class="algorithm-demo">
+                <h3>Key Generation</h3>
+                <div class="demo-controls">
+                    <button id="generate-keys">Generate RSA Keys</button>
+                </div>
+                
+                <div class="result">
+                    <h4>Public Key:</h4>
+                    <div id="public-key-display" class="key-display">Click "Generate RSA Keys" to create key pair</div>
+                    
+                    <h4>Private Key:</h4>
+                    <div id="private-key-display" class="key-display">Private key will appear here after generation</div>
+                </div>
+                
+                <h3>Encryption & Decryption</h3>
+                <div class="demo-controls">
+                    <input type="text" id="encrypt-input" placeholder="Enter message to encrypt" value="Hello, RSA!">
+                    <button id="encrypt-btn">Encrypt</button>
+                    <button id="decrypt-btn">Decrypt</button>
+                </div>
+                
+                <div class="result">
+                    <h4>Encrypted Result:</h4>
+                    <p id="encrypt-result">Encrypted text will appear here...</p>
+                    
+                    <h4>Decrypted Result:</h4>
+                    <p id="decrypt-result">Decrypted text will appear here...</p>
+                </div>
+                
+                <h3>Digital Signatures</h3>
+                <div class="demo-controls">
+                    <input type="text" id="sign-input" placeholder="Data to sign" value="Important document">
+                    <div class="operations">
+                        <button id="sign-btn">Create Signature</button>
+                        <button id="verify-btn">Verify Signature</button>
+                    </div>
+                    <input type="text" id="signature-input" placeholder="Signature will appear here">
+                </div>
+                
+                <div class="result">
+                    <div id="verify-status"></div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="applications">
+            <h2>Applications in Internet Technology</h2>
+            <p>Asymmetric cryptography enables secure communication and authentication across insecure networks like the internet:</p>
+            
+            <div class="card-container">
+                <div class="card">
+                    <h3>SSL/TLS Certificates</h3>
+                    <p>RSA is used in SSL/TLS handshakes to establish secure connections between web browsers and servers, enabling HTTPS for secure web browsing.</p>
+                </div>
+                
+                <div class="card">
+                    <h3>Digital Certificates</h3>
+                    <p>Certificate Authorities use RSA to sign digital certificates that verify the identity of websites, organizations, and individuals.</p>
+                </div>
+                
+                <div class="card">
+                    <h3>Secure Email</h3>
+                    <p>Protocols like PGP and S/MIME use RSA for encrypting emails and verifying sender authenticity through digital signatures.</p>
+                </div>
+                
+                <div class="card">
+                    <h3>Code Signing</h3>
+                    <p>Software developers use RSA to sign their code, ensuring that users can verify the authenticity and integrity of downloaded software.</p>
+                </div>
+            </div>
+            
+            <div class="info-panel">
+                <h3>Real-World Security</h3>
+                <p>In production systems, RSA is typically used with:</p>
+                <ul>
+                    <li><strong>2048-bit or 4096-bit keys</strong> for adequate security</li>
+                    <li><strong>Proper padding schemes</strong> like OAEP to prevent attacks</li>
+                    <li><strong>Hybrid cryptosystems</strong> combining RSA with symmetric encryption</li>
+                    <li><strong>Secure random number generation</strong> for key creation</li>
+                </ul>
+            </div>
+        </section>
+        
+        <section id="comparison">
+            <h2>Symmetric vs. Asymmetric Cryptography</h2>
+            <p>Understanding when to use symmetric vs. asymmetric cryptography is crucial for designing secure systems.</p>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Symmetric Cryptography</th>
+                        <th>Asymmetric Cryptography</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Keys Used</td>
+                        <td>Single shared key</td>
+                        <td>Key pair (public and private)</td>
+                    </tr>
+                    <tr>
+                        <td>Speed</td>
+                        <td>Faster</td>
+                        <td>Slower</td>
+                    </tr>
+                    <tr>
+                        <td>Key Distribution</td>
+                        <td>Challenging</td>
+                        <td>Easier (public keys can be shared)</td>
+                    </tr>
+                    <tr>
+                        <td>Encryption/Decryption</td>
+                        <td>Same key for both</td>
+                        <td>Different keys for each operation</td>
+                    </tr>
+                    <tr>
+                        <td>Digital Signatures</td>
+                        <td>Not natively supported</td>
+                        <td>Native support</td>
+                    </tr>
+                    <tr>
+                        <td>Use Cases</td>
+                        <td>Bulk data encryption</td>
+                        <td>Key exchange, digital signatures, authentication</td>
+                    </tr>
+                    <tr>
+                        <td>Examples</td>
+                        <td>AES, DES, Blowfish</td>
+                        <td>RSA, ECC, ElGamal</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Hybrid Cryptosystems</h3>
+            <p>Modern secure communication combines both approaches:</p>
+            <ul>
+                <li><strong>Asymmetric cryptography</strong> establishes secure session keys</li>
+                <li><strong>Symmetric cryptography</strong> encrypts the actual data transmission</li>
+                <li>This combines the key management benefits of asymmetric with the speed of symmetric cryptography</li>
+                <li>Used in SSL/TLS, VPNs, and secure messaging applications</li>
+            </ul>
+        </section>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>Created by- Soham Sable</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+           
+            let rsaKeys = {
+                publicKey: null,
+                privateKey: null
+            };
+
+            let rsa = null;
+
+         
+            class SimpleRSA {
+                constructor() {
+                    this.p = 61n;  
+                    this.q = 53n;  
+                    this.n = this.p * this.q;
+                    this.phi = (this.p - 1n) * (this.q - 1n);
+                    this.e = 17n;  
+                    this.d = this.modInverse(this.e, this.phi); 
+                }
+
+                modInverse(a, m) {
+                    let [m0, x0, x1] = [m, 0n, 1n];
+                    if (m === 1n) return 0n;
+                    
+                    while (a > 1n) {
+                        let q = a / m;
+                        [a, m] = [m, a % m];
+                        [x0, x1] = [x1 - q * x0, x0];
+                    }
+                    return x1 < 0n ? x1 + m0 : x1;
+                }
+
+             
+                stringToBigInt(str) {
+                    return str.split('').map(char => 
+                        BigInt(char.charCodeAt(0))
+                    );
+                }
+
+                bigIntToString(bigInts) {
+                    return bigInts.map(bigInt => 
+                        String.fromCharCode(Number(bigInt))
+                    ).join('');
+                }
+
+                encrypt(message) {
+                    const messageBigInts = this.stringToBigInt(message);
+                    return messageBigInts.map(charCode => {
+                       
+                        return this.modPow(charCode, this.e, this.n);
+                    });
+                }
+
+             
+                decrypt(encryptedBigInts) {
+                    return encryptedBigInts.map(encryptedChar => {
+                        
+                        return this.modPow(encryptedChar, this.d, this.n);
+                    });
+                }
+
+                
+                modPow(base, exponent, modulus) {
+                    let result = 1n;
+                    base = base % modulus;
+                    
+                    while (exponent > 0n) {
+                        if (exponent % 2n === 1n) {
+                            result = (result * base) % modulus;
+                        }
+                        exponent = exponent >> 1n;
+                        base = (base * base) % modulus;
+                    }
+                    return result;
+                }
+
+            
+                sign(data) {
+                    const hash = this.simpleHash(data);
+                    return this.modPow(hash, this.d, this.n);
+                }
+
+        
+                verify(data, signature) {
+                    const hash = this.simpleHash(data);
+                    const decryptedHash = this.modPow(signature, this.e, this.n);
+                    return hash === decryptedHash;
+                }
+
+                simpleHash(str) {
+                    let hash = 0n;
+                    for (let i = 0; i < str.length; i++) {
+                        const char = str.charCodeAt(i);
+                        hash = (hash * 31n + BigInt(char)) % this.n;
+                    }
+                    return hash;
+                }
+
+                getPublicKey() {
+                    return {
+                        e: this.e.toString(),
+                        n: this.n.toString()
+                    };
+                }
+
+                getPrivateKey() {
+                    return {
+                        d: this.d.toString(),
+                        n: this.n.toString()
+                    };
+                }
+            }
+
+            const generateKeysBtn = document.getElementById('generate-keys');
+            const encryptBtn = document.getElementById('encrypt-btn');
+            const decryptBtn = document.getElementById('decrypt-btn');
+            const signBtn = document.getElementById('sign-btn');
+            const verifyBtn = document.getElementById('verify-btn');
+
+           
+            generateKeysBtn.addEventListener('click', function() {
+                try {
+                    document.getElementById('public-key-display').textContent = 'Generating RSA keys...';
+                    document.getElementById('private-key-display').textContent = 'Generating RSA keys...';
+
+                    setTimeout(() => {
+                        rsa = new SimpleRSA();
+                        rsaKeys.publicKey = rsa.getPublicKey();
+                        rsaKeys.privateKey = rsa.getPrivateKey();
+
+                        document.getElementById('public-key-display').textContent = 
+                            `e: ${rsaKeys.publicKey.e}\nn: ${rsaKeys.publicKey.n}`;
+                        
+                        document.getElementById('private-key-display').textContent = 
+                            `d: ${rsaKeys.privateKey.d}\nn: ${rsaKeys.privateKey.n}`;
+                    }, 500);
+
+                } catch (error) {
+                    alert('Key generation failed: ' + error.message);
+                }
+            });
+
+      
+            encryptBtn.addEventListener('click', function() {
+                if (!rsa) {
+                    alert('Please generate RSA keys first!');
+                    return;
+                }
+
+                const message = document.getElementById('encrypt-input').value;
+                if (!message) {
+                    alert('Please enter a message to encrypt');
+                    return;
+                }
+
+                try {
+                    document.getElementById('encrypt-result').textContent = 'Encrypting...';
+                    
+                    setTimeout(() => {
+                        const encrypted = rsa.encrypt(message);
+                        const encryptedBase64 = btoa(JSON.stringify(encrypted.map(num => num.toString())));
+                        
+                        document.getElementById('encrypt-result').textContent = encryptedBase64;
+                    }, 500);
+
+                } catch (error) {
+                    alert('Encryption failed: ' + error.message);
+                }
+            });
+
+            decryptBtn.addEventListener('click', function() {
+                if (!rsa) {
+                    alert('Please generate RSA keys first!');
+                    return;
+                }
+
+                const encryptResult = document.getElementById('encrypt-result').textContent;
+                if (!encryptResult || encryptResult === 'Encrypted text will appear here...' || encryptResult === 'Encrypting...') {
+                    alert('Please encrypt a message first');
+                    return;
+                }
+
+                try {
+                    document.getElementById('decrypt-result').textContent = 'Decrypting...';
+                    
+                    setTimeout(() => {
+                        const encryptedArray = JSON.parse(atob(encryptResult));
+                        const encryptedBigInts = encryptedArray.map(num => BigInt(num));
+                        const decrypted = rsa.decrypt(encryptedBigInts);
+                        const decryptedMessage = rsa.bigIntToString(decrypted);
+                        
+                        document.getElementById('decrypt-result').textContent = decryptedMessage;
+                    }, 500);
+
+                } catch (error) {
+                    alert('Decryption failed: ' + error.message);
+                }
+            });
+
+            
+            signBtn.addEventListener('click', function() {
+                if (!rsa) {
+                    alert('Please generate RSA keys first!');
+                    return;
+                }
+
+                const data = document.getElementById('sign-input').value;
+                if (!data) {
+                    alert('Please enter data to sign');
+                    return;
+                }
+
+                try {
+                    const signature = rsa.sign(data);
+                    document.getElementById('signature-input').value = signature.toString();
+                } catch (error) {
+                    alert('Signature creation failed: ' + error.message);
+                }
+            });
+
+            
+            verifyBtn.addEventListener('click', function() {
+                if (!rsa) {
+                    alert('Please generate RSA keys first!');
+                    return;
+                }
+
+                const data = document.getElementById('sign-input').value;
+                const signature = document.getElementById('signature-input').value;
+
+                if (!data || !signature) {
+                    alert('Please enter both data and signature');
+                    return;
+                }
+
+                try {
+                    const signatureBigInt = BigInt(signature);
+                    const isValid = rsa.verify(data, signatureBigInt);
+                    
+                    const statusDiv = document.getElementById('verify-status');
+                    if (isValid) {
+                        statusDiv.innerHTML = '<div class="status valid"> Signature is VALID - Data integrity verified</div>';
+                    } else {
+                        statusDiv.innerHTML = '<div class="status invalid"> Signature is INVALID - Data may be tampered</div>';
+                    }
+                } catch (error) {
+                    alert('Signature verification failed: ' + error.message);
+                }
+            });
+
+            setTimeout(() => {
+                generateKeysBtn.click();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
